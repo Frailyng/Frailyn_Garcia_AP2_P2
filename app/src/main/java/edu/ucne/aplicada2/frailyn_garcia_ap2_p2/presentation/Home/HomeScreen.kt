@@ -74,7 +74,7 @@ fun HomeScreen(
                     )
                 ) {
                     Text(
-                        text = "Registro Compras",
+                        text = "Registro Registros",
                         fontSize = 16.sp,
                         color = Color.DarkGray
                     )
