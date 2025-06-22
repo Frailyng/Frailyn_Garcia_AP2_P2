@@ -124,7 +124,7 @@ fun RepositoryListBodyScreen(
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Blue,
+                    containerColor = Color(0xFF0D47A1),
                     actionIconContentColor = Color.White
                 ),
                 actions = {
