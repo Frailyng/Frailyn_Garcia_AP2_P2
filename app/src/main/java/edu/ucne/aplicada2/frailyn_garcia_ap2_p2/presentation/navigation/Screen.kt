@@ -5,6 +5,8 @@ import kotlinx.serialization.Serializable
 sealed class Screen {
 
     @Serializable
+    data object Home : Screen()
+    @Serializable
     data object RepositoryList: Screen()
     @Serializable
     data class Repository(val registroId: Int?) : Screen()
