@@ -7,6 +7,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import edu.ucne.aplicada2.frailyn_garcia_ap2_p2.presentation.Home.HomeScreen
 import edu.ucne.aplicada2.frailyn_garcia_ap2_p2.presentation.repositories.RepositoryListScreen
 
 @Composable
@@ -18,9 +19,14 @@ fun HomeNavHost(
     val scope = rememberCoroutineScope()
     NavHost(
         navController = navHostController,
-        startDestination = Screen.RepositoryList
-    ) {
-        composable<Screen.RepositoryList> {
+        startDestination = Screen.Home
+    )
+    {
+        //inicio
+        composable <Screen.Home> {
+            HomeScreen(navController = navHostController)
+        }
+            composable<Screen.RepositoryList> {
             RepositoryListScreen(
                 goToRepository = { id ->
                     navHostController.navigate(Screen.Repository(null))
