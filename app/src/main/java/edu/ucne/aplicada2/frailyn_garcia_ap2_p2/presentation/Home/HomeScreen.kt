@@ -58,7 +58,7 @@ fun HomeScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 OutlinedButton(
-                    onClick = { navController.navigate(Screen.RegistroList) },
+                    onClick = { navController.navigate(Screen.RepositoryList) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(52.dp)
