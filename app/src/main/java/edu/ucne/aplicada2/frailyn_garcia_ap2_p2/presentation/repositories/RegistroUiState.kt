@@ -1,4 +1,4 @@
-package edu.ucne.aplicada2.frailyn_garcia_ap2_p2.presentation.registros
+package edu.ucne.aplicada2.frailyn_garcia_ap2_p2.presentation.repositories
 
 import edu.ucne.aplicada2.frailyn_garcia_ap2_p2.data.remote.dto.RepositoryDto
 
