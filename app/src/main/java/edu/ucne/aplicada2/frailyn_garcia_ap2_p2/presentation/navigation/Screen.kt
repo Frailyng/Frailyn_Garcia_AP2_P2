@@ -9,5 +9,5 @@ sealed class Screen {
     @Serializable
     data object RegistroList: Screen()
     @Serializable
-    data class Registro(val registroId: Int?) : Screen()
+    data class Repository(val registroId: Int?) : Screen()
 }
