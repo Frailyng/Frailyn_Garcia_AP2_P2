@@ -4,7 +4,7 @@ import edu.ucne.aplicada2.frailyn_garcia_ap2_p2.data.remote.dto.RepositoryDto
 import javax.inject.Inject
 
 class RemoteDataSource @Inject constructor(
-    private val registroApi: RegistroApi
+    private val registroApi: RepositoryApi
 ){
     suspend fun getRegistros()= registroApi.getRegistros()
 
