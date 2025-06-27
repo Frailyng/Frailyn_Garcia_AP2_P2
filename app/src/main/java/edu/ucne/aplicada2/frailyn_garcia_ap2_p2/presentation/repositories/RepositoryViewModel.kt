@@ -4,11 +4,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import edu.ucne.aplicada2.frailyn_garcia_ap2_p2.data.remote.Resource
+import edu.ucne.aplicada2.frailyn_garcia_ap2_p2.data.remote.dto.RepositoryDto
 import edu.ucne.aplicada2.frailyn_garcia_ap2_p2.data.repository.RepositoryRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,8 +28,40 @@ class RepositoryViewModel @Inject constructor(
     private val _loading = MutableStateFlow(false)
     val loading: StateFlow<Boolean> = _loading
 
+    //Para el metodo de busqueda
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
+
+    private val _searchResults = MutableStateFlow<List<RepositoryDto>>(emptyList())
+    val searchResults: StateFlow<List<RepositoryDto>> = _searchResults.asStateFlow()
+
+
+    fun onEvent(event: RepositoryEvent){
+        when(event) {
+            RepositoryEvent.DeleteRepositories -> TODO()
+            RepositoryEvent.GetRepositories -> getRepository("enelramon")
+            RepositoryEvent.PostRepository -> TODO()
+            RepositoryEvent.PutRepositories -> TODO()
+            is RepositoryEvent.DescriptionChange -> TODO()
+            is RepositoryEvent.Html_urlChange -> TODO()
+            is RepositoryEvent.NameChange -> TODO()
+        }
+    }
+
     init {
         getRepository("enelramon")
+        //Para la busqueda
+        viewModelScope.launch {
+            _searchQuery
+                .debounce(600)
+                .distinctUntilChanged()
+                .mapLatest { query ->
+                    filterRepositories(query)
+                }
+                .collectLatest { filtered ->
+                    _searchResults.value = filtered
+                }
+        }
     }
 
     fun getRepository(username: String) {
@@ -53,6 +89,21 @@ class RepositoryViewModel @Inject constructor(
                         }
                     }
                 }
+            }
+        }
+    }
+    //Metodo para actualizar la busqueda
+    fun onSearchQueryChanged(query: String) {
+        _searchQuery.value = query
+    }
+
+    private fun filterRepositories(query: String): List<RepositoryDto> {
+        return if (query.isBlank()) {
+            _uiState.value.repository
+        } else {
+            _uiState.value.repository.filter {
+                it.name.contains(query, ignoreCase = true) ||
+                        (it.description?.contains(query, ignoreCase = true) ?: false)
             }
         }
     }
