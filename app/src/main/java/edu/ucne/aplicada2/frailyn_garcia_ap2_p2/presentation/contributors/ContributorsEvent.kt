@@ -5,7 +5,5 @@ sealed interface ContributorsEvent {
     data class Node_IdChange(val node_id: String): ContributorsEvent
     data class Html_urlChange(val html_url: String): ContributorsEvent
     data class ContributionsChange(val contributions: Int): ContributorsEvent
-
-
-    data object GetContributors: ContributorsEvent
+    data class GetContributors(val repositoryName: String) : ContributorsEvent
 }
