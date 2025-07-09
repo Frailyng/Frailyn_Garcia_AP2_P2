@@ -3,6 +3,7 @@ package edu.ucne.aplicada2.frailyn_garcia_ap2_p2.data.repository
 
 import edu.ucne.aplicada2.frailyn_garcia_ap2_p2.data.remote.RemoteDataSource
 import edu.ucne.aplicada2.frailyn_garcia_ap2_p2.data.remote.Resource
+import edu.ucne.aplicada2.frailyn_garcia_ap2_p2.data.remote.dto.ContributorsDto
 import edu.ucne.aplicada2.frailyn_garcia_ap2_p2.data.remote.dto.RepositoryDto
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -18,6 +19,15 @@ class RepositoryRepository @Inject constructor(
             emit(Resource.Success(repositories))
         } catch (e: Exception) {
             emit(Resource.Error("Error al obtener repositorios: ${e.message}"))
+        }
+    }
+    suspend fun getContributors(repos: String): Flow<Resource<List<ContributorsDto>>> = flow {
+        emit(Resource.Loading())
+        try {
+            val repos = remoteDataSource.getContributors(repos)
+            emit(Resource.Success(repos))
+        } catch (e: Exception) {
+            emit(Resource.Error("Error al obtener los contribuidores: ${e.message}"))
         }
     }
 }
