@@ -4,13 +4,18 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
@@ -51,10 +56,11 @@ import kotlinx.coroutines.delay
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ContributorsListScreen(
+    repositoryName: String,
     drawerState: DrawerState,
     scope: CoroutineScope,
     viewModel: ContributorsViewModel = hiltViewModel(),
-    goToContributors: (String) -> Unit,
+    onBackClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -62,39 +68,38 @@ fun ContributorsListScreen(
 
     LaunchedEffect(Unit) {
         delay(180000)
-        viewModel.onEvent(ContributorsEvent.GetContributors)
+        viewModel.onEvent(ContributorsEvent.GetContributors(repositoryName))
     }
 
     LaunchedEffect(uiState.contributors) {
         if (uiState.contributors.size > lastRetentionCount) {
             Toast.makeText(
                 context,
-                "Nueva contribucion: ${uiState.contributors.lastOrNull()?.node_id}",
+                "Nuevo contribuidor: ${uiState.contributors.lastOrNull()?.login}",
                 Toast.LENGTH_LONG
             ).show()
         }
         lastRetentionCount = uiState.contributors.size
     }
 
-    RepositoryListBodyScreen(
+    ContributorsListBodyScreen(
         drawerState = drawerState,
         scope = scope,
         uiState = uiState,
-        reloadContributors = { viewModel.getContributors("Frailyng") },
-        goToContributors = goToContributors
+        reloadContributors = { viewModel.getContributors(repositoryName) },
+        onBackClick = onBackClick
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
-fun RepositoryListBodyScreen(
+fun ContributorsListBodyScreen(
     drawerState: DrawerState,
     scope: CoroutineScope,
     uiState: ContributorsUiState,
     reloadContributors: () -> Unit,
-    goToContributors: (String) -> Unit,
+    onBackClick: () -> Unit
 ) {
-
     val pullRefreshState = rememberPullRefreshState(
         refreshing = uiState.isLoading,
         onRefresh = reloadContributors
@@ -106,17 +111,22 @@ fun RepositoryListBodyScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Lista de Contribuciones",
+                        text = "Contribuidores",
                         style = MaterialTheme.typography.titleLarge.copy(
                             fontWeight = FontWeight.Bold,
                             color = Color.White
                         )
                     )
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF0D47A1),
-                    actionIconContentColor = Color.White
-                ),
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Volver",
+                            tint = Color.White
+                        )
+                    }
+                },
                 actions = {
                     IconButton(
                         onClick = reloadContributors,
@@ -128,11 +138,14 @@ fun RepositoryListBodyScreen(
                             tint = Color.White
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color(0xFF0D47A1),
+                    actionIconContentColor = Color.White
+                )
             )
-        },
-
-        ) { padding ->
+        }
+    ) { padding ->
         Box(
             modifier = Modifier
                 .padding(padding)
@@ -146,17 +159,28 @@ fun RepositoryListBodyScreen(
                         color = Color.Cyan
                     )
                 }
-
                 uiState.contributors.isEmpty() -> {
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "No se encontraron contribuciones",
+                            text = "No se encontraron contribuidores",
                             style = MaterialTheme.typography.bodyLarge,
                             color = Color.Gray
                         )
+                    }
+                }
+                else -> {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        items(uiState.contributors) { contributor ->
+                            ContributorCard(contributor = contributor)
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
                     }
                 }
             }
@@ -167,7 +191,6 @@ fun RepositoryListBodyScreen(
                 modifier = Modifier.align(Alignment.TopCenter),
                 contentColor = Color.Cyan
             )
-
 
             if (!uiState.errorMessage.isNullOrEmpty()) {
                 Box(
@@ -187,9 +210,8 @@ fun RepositoryListBodyScreen(
 }
 
 @Composable
-fun RepositoryCard(
-    contributors: ContributorsDto,
-    goToContributors: (String) -> Unit
+fun ContributorCard(
+    contributor: ContributorsDto
 ) {
     Card(
         elevation = CardDefaults.cardElevation(4.dp),
@@ -207,10 +229,9 @@ fun RepositoryCard(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = contributors.login,
+                    text = contributor.login,
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.SemiBold
                     ),
@@ -219,36 +240,35 @@ fun RepositoryCard(
                 Text(
                     text = buildAnnotatedString {
                         withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                            append("Description: ")
+                            append("Node ID: ")
                         }
-                        append(contributors.node_id ?: "Sin descripción")
+                        append(contributor.node_id ?: "Sin Node ID")
                     },
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.Gray,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-
                 Text(
                     text = buildAnnotatedString {
                         withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                            append("Html URL: ")
+                            append("Contribuciones: ")
                         }
-                        append(contributors.htmlUrl ?: "Sin URL")
+                        append(contributor.contributions.toString())
                     },
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray,
-                    overflow = TextOverflow.Ellipsis
+                    color = Color.Gray
                 )
                 Text(
                     text = buildAnnotatedString {
                         withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                            append("Contributions: ")
+                            append("URL: ")
                         }
-                        append(contributors.contributions.toString())
+                        append(contributor.htmlUrl ?: "Sin URL")
                     },
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.Gray,
+                    maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
             }
