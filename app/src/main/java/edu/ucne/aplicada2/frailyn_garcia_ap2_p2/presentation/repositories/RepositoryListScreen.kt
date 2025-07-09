@@ -1,6 +1,7 @@
 package edu.ucne.aplicada2.frailyn_garcia_ap2_p2.presentation.repositories
 
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -68,7 +69,7 @@ fun RepositoryListScreen(
     val context = LocalContext.current
     var lastRetentionCount by remember { mutableStateOf(0) }
 
-    //Para la busqueda
+    // Para la búsqueda
     val query by viewModel.searchQuery.collectAsStateWithLifecycle()
     val searchResults by viewModel.searchResults.collectAsStateWithLifecycle()
 
@@ -92,7 +93,7 @@ fun RepositoryListScreen(
         drawerState = drawerState,
         scope = scope,
         uiState = uiState,
-        reloadRepository = { viewModel.getRepository("enelramon") },
+        reloadRepository = { viewModel.getRepository("Frailyng") },
         goToRepository = goToRepository,
         createRepository = createRepository,
         deleteRepository = deleteRepository,
@@ -116,7 +117,6 @@ fun RepositoryListBodyScreen(
     searchResults: List<RepositoryDto>,
     onSearchQueryChanged: (String) -> Unit
 ) {
-
     val pullRefreshState = rememberPullRefreshState(
         refreshing = uiState.isLoading,
         onRefresh = reloadRepository
@@ -160,9 +160,8 @@ fun RepositoryListBodyScreen(
             ) {
                 Icon(Icons.Filled.Add, "Crear nuevo repositorio")
             }
-        },
-
-        ) { padding ->
+        }
+    ) { padding ->
         Box(
             modifier = Modifier
                 .padding(padding)
@@ -194,7 +193,6 @@ fun RepositoryListBodyScreen(
                             .fillMaxWidth()
                             .padding(16.dp)
                     ) {
-                        //Para la busqueda
                         item {
                             SearchBar(
                                 query = query,
@@ -217,14 +215,12 @@ fun RepositoryListBodyScreen(
                 }
             }
 
-
             PullRefreshIndicator(
                 refreshing = uiState.isLoading,
                 state = pullRefreshState,
                 modifier = Modifier.align(Alignment.TopCenter),
                 contentColor = Color.Cyan
             )
-
 
             if (!uiState.errorMessage.isNullOrEmpty()) {
                 Box(
@@ -246,14 +242,15 @@ fun RepositoryListBodyScreen(
 @Composable
 fun RepositoryCard(
     repository: RepositoryDto,
-    goToRepository: () -> Unit,
+    goToRepository: (String) -> Unit, // Cambiado de () -> Unit a (String) -> Unit
     deleteRepository: ((RepositoryDto) -> Unit)?
 ) {
     Card(
         elevation = CardDefaults.cardElevation(4.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 4.dp),
+            .padding(horizontal = 8.dp, vertical = 4.dp)
+            .clickable { goToRepository(repository.name) },
         colors = CardDefaults.cardColors(
             containerColor = Color.White
         ),
@@ -265,7 +262,6 @@ fun RepositoryCard(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = repository.name,
@@ -286,7 +282,6 @@ fun RepositoryCard(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-
                 Text(
                     text = buildAnnotatedString {
                         withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
@@ -302,7 +297,7 @@ fun RepositoryCard(
         }
     }
 }
-//Para la busqueda
+
 @Composable
 fun SearchBar(
     query: String,
