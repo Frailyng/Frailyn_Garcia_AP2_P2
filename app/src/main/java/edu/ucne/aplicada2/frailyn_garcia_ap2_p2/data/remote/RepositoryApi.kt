@@ -10,7 +10,8 @@ interface RepositoryApi {
     @GET("users/{username}/repos")
     suspend fun listRepos(@Path("username") username: String): List<RepositoryDto>
 
-    @GET("/users/{username}/repos/contributors")
-    suspend fun listContributors(@Path("repos") repos: String): List<ContributorsDto>
+    @GET("/repos/{owner}/{repo}/contributors")
+    suspend fun listContributors(@Path("owner") owner: String, @Path("repo") repo: String
+    ): List<ContributorsDto>
 
 }
