@@ -93,7 +93,7 @@ fun RepositoryListScreen(
         drawerState = drawerState,
         scope = scope,
         uiState = uiState,
-        reloadRepository = { viewModel.getRepository("Frailyng") },
+        reloadRepository = { viewModel.getRepository("enelramon") },
         goToRepository = goToRepository,
         createRepository = createRepository,
         deleteRepository = deleteRepository,
