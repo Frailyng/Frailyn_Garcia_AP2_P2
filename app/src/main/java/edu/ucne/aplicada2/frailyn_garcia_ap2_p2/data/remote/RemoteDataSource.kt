@@ -7,5 +7,5 @@ class RemoteDataSource @Inject constructor(
 ) {
     suspend fun getRepository(username: String) = repositoryApi.listRepos(username)
 
-    suspend fun getContributors(repo: String) = repositoryApi.listContributors("enelramon", repo)
+    suspend fun getContributors(repo: String) = repositoryApi.listContributors("Frailyng", repo)
 }
