@@ -27,7 +27,7 @@ class ContributorsViewModel @Inject constructor(
     fun onEvent(event: ContributorsEvent) {
         when (event) {
             is ContributorsEvent.ContributionsChange -> TODO()
-            ContributorsEvent.GetContributors -> TODO()
+            is ContributorsEvent.GetContributors -> TODO()
             is ContributorsEvent.Html_urlChange -> TODO()
             is ContributorsEvent.LoginChange -> TODO()
             is ContributorsEvent.Node_IdChange -> TODO()
