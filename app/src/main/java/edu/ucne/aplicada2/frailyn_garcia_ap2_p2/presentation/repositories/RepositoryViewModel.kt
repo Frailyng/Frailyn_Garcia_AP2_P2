@@ -39,7 +39,7 @@ class RepositoryViewModel @Inject constructor(
     fun onEvent(event: RepositoryEvent){
         when(event) {
             RepositoryEvent.DeleteRepositories -> TODO()
-            RepositoryEvent.GetRepositories -> getRepository("enelramon")
+            RepositoryEvent.GetRepositories -> getRepository("Frailyng")
             RepositoryEvent.PostRepository -> TODO()
             RepositoryEvent.PutRepositories -> TODO()
             is RepositoryEvent.DescriptionChange -> TODO()
@@ -49,7 +49,7 @@ class RepositoryViewModel @Inject constructor(
     }
 
     init {
-        getRepository("enelramon")
+        getRepository("Frailyng")
         //Para la busqueda
         viewModelScope.launch {
             _searchQuery

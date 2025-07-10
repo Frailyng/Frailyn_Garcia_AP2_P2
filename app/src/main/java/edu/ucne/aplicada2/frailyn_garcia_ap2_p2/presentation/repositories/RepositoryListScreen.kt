@@ -242,7 +242,7 @@ fun RepositoryListBodyScreen(
 @Composable
 fun RepositoryCard(
     repository: RepositoryDto,
-    goToRepository: (String) -> Unit, // Cambiado de () -> Unit a (String) -> Unit
+    goToRepository: (String) -> Unit,
     deleteRepository: ((RepositoryDto) -> Unit)?
 ) {
     Card(
