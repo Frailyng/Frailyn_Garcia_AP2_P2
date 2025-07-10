@@ -67,8 +67,8 @@ fun ContributorsListScreen(
     var lastRetentionCount by remember { mutableStateOf(0) }
 
     LaunchedEffect(Unit) {
-        delay(180000)
-        viewModel.onEvent(ContributorsEvent.GetContributors(repositoryName))
+        delay(100)
+        viewModel.getContributors(repositoryName)
     }
 
     LaunchedEffect(uiState.contributors) {
