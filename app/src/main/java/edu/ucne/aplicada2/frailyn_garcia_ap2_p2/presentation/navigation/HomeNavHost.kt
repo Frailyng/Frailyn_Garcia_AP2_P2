@@ -36,9 +36,10 @@ fun HomeNavHost(
         composable<Screen.RepositoryList> {
             RepositoryListScreen(
                 goToRepository = { id ->
-                    navHostController.navigate(Screen.Repository(null))
+                    navHostController.navigate(Screen.ContributorsList(id))
                 },
                 createRepository = {
+                    // TODO: Implementar navegación a la pantalla de creación de repositorios
                     navHostController.navigate(Screen.Repository(null))
                 },
                 deleteRepository = null, // Pasamos null explícitamente
@@ -58,7 +59,7 @@ fun HomeNavHost(
             )
         }
 
-        // Placeholder para Repository (para evitar crash)
+        // Placeholder para Repository (para createRepository)
         composable<Screen.Repository> { backStackEntry ->
             val repositoryScreen = backStackEntry.toRoute<Screen.Repository>()
             // TODO: Implementar pantalla para Repository

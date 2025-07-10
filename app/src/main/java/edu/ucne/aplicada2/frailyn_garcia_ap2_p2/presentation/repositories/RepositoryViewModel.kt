@@ -49,7 +49,7 @@ class RepositoryViewModel @Inject constructor(
     }
 
     init {
-        getRepository("ramon")
+        getRepository("enelramon")
         //Para la busqueda
         viewModelScope.launch {
             _searchQuery
